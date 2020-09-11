@@ -41,6 +41,7 @@ export default {
         trackUserLocation: true
       })
       map.addControl(geolocate, 'top-right')
+      map.addControl(new mapboxgl.FullscreenControl(), 'top-left')
 
       // The 'building' layer in the mapbox-streets vector source contains building-height data from OpenStreetMap.
       map.on('load', () => {
@@ -118,6 +119,7 @@ export default {
   #stream {
     display: flex;
     justify-content: center;
+    background-color: silver;
     align-items: center;
     border-left: 2px solid black;
     border-bottom: 2px solid black;
@@ -128,6 +130,7 @@ export default {
     align-items: center;
     border-right: 2px solid black;
     border-top: 2px solid black;
+    background-color: silver;
   }
   #info {
     display: flex;
@@ -135,5 +138,6 @@ export default {
     align-items: center;
     border-left: 2px solid black;
     border-top: 2px solid black;
+    background-color: silver;
   }
 </style>
