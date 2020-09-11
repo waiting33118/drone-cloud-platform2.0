@@ -1,7 +1,13 @@
 <template>
   <div id="app">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <router-link to="/" class="navbar-brand">無人機雲端控制平台</router-link>
+      <router-link to="/" class="navbar-brand mb-0 h1">
+      <img src="./assets/logo.svg" width="30" height="30" class="d-inline-block align-top" alt="logo" loading="lazy">
+      無人機雲端控制平台
+      </router-link>
+      <div id="item-list" class="ml-auto">
+        <router-link to="/client" class="btn btn-success rounded-pill" target="_blank">客戶端</router-link>
+      </div>
     </nav>
     <router-view class="view"/>
   </div>
