@@ -1,12 +1,32 @@
 <template>
   <div id="app">
-    <router-view/>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <router-link to="/" class="navbar-brand">無人機雲端控制平台</router-link>
+    </nav>
+    <router-view class="view"/>
   </div>
 </template>
 
+<script>
+import 'bootstrap'
+import 'bootstrap/dist/css/bootstrap.min.css'
+export default {
+
+}
+</script>
+
 <style scoped>
-  #app {
+  #app  {
+    display: flex;
+    flex-flow: column nowrap;
     height: 100%;
     width: 100%;
+  }
+  nav {
+    z-index: 999;
+    box-shadow: 0 8px 6px -6px black;
+  }
+  .view {
+    flex-grow: 1;
   }
 </style>
