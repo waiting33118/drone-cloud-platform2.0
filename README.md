@@ -1,4 +1,4 @@
-# chrome-env-test
+# drone-cloud-platform2.0
 
 ## Project setup
 ```
