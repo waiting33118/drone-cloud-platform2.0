@@ -80,6 +80,9 @@ export default {
   created () {
     this.featureDetection()
     this.getVideoSource()
+  },
+  watch: {
+    videoSources: 'videoSourceChange'
   }
 }
 </script>
