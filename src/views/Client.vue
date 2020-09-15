@@ -82,7 +82,10 @@ export default {
     this.getVideoSource()
   },
   watch: {
-    videoSources: 'videoSourceChange'
+    videoSources: {
+      handler: 'getVideoSource',
+      deep: true
+    }
   }
 }
 </script>
