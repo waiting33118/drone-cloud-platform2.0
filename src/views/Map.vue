@@ -108,7 +108,7 @@ export default {
   #container {
     display: grid;
     grid-template-columns: repeat(2,1fr);
-    grid-template-rows: repeat(2,auto);
+    grid-template-rows: auto;
     width: 100%;
     height:100%;
   }
@@ -139,5 +139,12 @@ export default {
     border-left: 2px solid black;
     border-top: 2px solid black;
     background-color: silver;
+  }
+
+  @media screen and (max-width: 576px) {
+    #container {
+      grid-template-columns: repeat(1,1fr);
+      grid-template-rows: minmax(300px,1fr);
+    }
   }
 </style>
