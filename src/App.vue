@@ -3,10 +3,18 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
       <router-link to="/" class="navbar-brand mb-0 h1">
       <img src="./assets/logo.svg" width="30" height="30" class="d-inline-block align-top" alt="logo" loading="lazy">
-      無人機雲端控制平台
+      Drone Cloud Platform 2.0
       </router-link>
-      <div id="item-list" class="ml-auto">
-        <router-link to="/client" class="btn btn-success rounded-pill" target="_blank">客戶端</router-link>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+        <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+          <li class="nav-item d-flex justify-content-center">
+              <router-link v-if="$route.path === '/client'" to="/" class="btn btn-primary rounded-pill">Home</router-link>
+              <router-link v-else to="/client" class="btn btn-success rounded-pill" target="_blank">Client</router-link>
+          </li>
+        </ul>
       </div>
     </nav>
     <router-view class="view"/>
