@@ -10,6 +10,7 @@
   "dependencies": {
     "bootstrap": "^4.5.2",
     "core-js": "^3.6.5",
+    "golden-layout": "^1.5.9",
     "jquery": "^3.5.1",
     "mapbox-gl": "^1.12.0",
     "popper.js": "^1.16.1",
