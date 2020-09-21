@@ -1,14 +1,14 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Map from './../views/Map.vue'
+import Layout from './../views/Layout.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'Map',
-    component: Map
+    name: 'Layout',
+    component: Layout
   },
   {
     path: '/client',
