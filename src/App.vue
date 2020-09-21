@@ -1,7 +1,7 @@
 <template>
   <div id="app">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-      <router-link to="/" class="navbar-brand mb-0 h1">
+    <nav class="navbar navbar-expand-md navbar-light bg-light">
+      <router-link to="/" class="navbar-brand mb-0 h1 mr-0">
       <img src="./assets/logo.svg" width="30" height="30" class="d-inline-block align-top" alt="logo" loading="lazy">
       Drone Cloud Platform 2.0
       </router-link>
@@ -24,23 +24,24 @@
 <script>
 import 'bootstrap'
 import 'bootstrap/dist/css/bootstrap.min.css'
-export default {
 
+export default {
+  name: 'App'
 }
 </script>
 
 <style scoped>
-  #app  {
-    display: flex;
-    flex-flow: column nowrap;
-    height: 100%;
-    width: 100%;
-  }
-  nav {
-    z-index: 999;
-    box-shadow: 0 8px 6px -6px black;
-  }
-  .view {
-    flex-grow: 1;
-  }
+#app {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+nav {
+  z-index: 999;
+  box-shadow: 0 8px 6px -6px black;
+}
+.view {
+  flex-grow: 1;
+}
 </style>
