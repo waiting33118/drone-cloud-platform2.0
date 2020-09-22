@@ -19,7 +19,7 @@ export default {
           content: [
             {
               type: 'column',
-              width: 35,
+              width: 30,
               content: [
                 {
                   type: 'component',
@@ -48,11 +48,14 @@ export default {
     }
     /* golden layout */
     const myLayout = new GoldenLayout(config, document.getElementById('golden-layout'))
+    /* drone info */
     myLayout.registerComponent('droneComponent', function (container, state) {
     })
+    /* video stream */
     myLayout.registerComponent('streamComponent', function (container, state) {
-      container.getElement().html('<iframe width="300" height="300" src="https://www.youtube.com/embed/jrOgcQ1FeFQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
+      container.getElement().html('<iframe width="460" height="316" src="https://www.youtube.com/embed/jrOgcQ1FeFQ?autoplay=1&mute=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
     })
+    /* mapbox */
     myLayout.registerComponent('mapComponent', function (container, state) {
       container.getElement()[0].id = 'mapbox'
       container.on('open', () => {
@@ -72,16 +75,16 @@ export default {
         })
 
         const nav = new mapboxgl.NavigationControl()
-        map.addControl(nav, 'top-right')
-
         const geolocate = new mapboxgl.GeolocateControl({
           positionOptions: {
             enableHighAccuracy: true
           },
           trackUserLocation: true
         })
-        map.addControl(geolocate, 'top-right')
-        map.addControl(new mapboxgl.FullscreenControl(), 'top-left')
+        const scale = new mapboxgl.ScaleControl({
+          maxWidth: 100,
+          unit: 'imperial'
+        })
 
         // The 'building' layer in the mapbox-streets vector source contains building-height data from OpenStreetMap.
         map.on('load', () => {
@@ -130,10 +133,23 @@ export default {
           )
         })
 
-        const scale = new mapboxgl.ScaleControl({
-          maxWidth: 80,
-          unit: 'imperial'
+        new mapboxgl.Marker({
+          draggable: true,
+          color: '#92E000'
         })
+          .setLngLat([121.53592286623717, 25.04267087499275])
+          .addTo(map)
+
+        new mapboxgl.Marker({
+          draggable: true,
+          color: '#FF3B22'
+        })
+          .setLngLat([121.5345043337581, 25.04280286711254])
+          .addTo(map)
+
+        map.addControl(nav, 'top-right')
+        map.addControl(geolocate, 'top-right')
+        map.addControl(new mapboxgl.FullscreenControl(), 'top-left')
         map.addControl(scale)
         scale.setUnit('metric')
       })
@@ -150,10 +166,6 @@ export default {
     height: 100%;
   }
   #mapbox {
-    width: 100%;
-    height: 100%;
-  }
-  video {
     width: 100%;
     height: 100%;
   }
