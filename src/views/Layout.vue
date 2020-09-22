@@ -19,6 +19,7 @@ export default {
           content: [
             {
               type: 'column',
+              width: 35,
               content: [
                 {
                   type: 'component',
@@ -50,6 +51,7 @@ export default {
     myLayout.registerComponent('droneComponent', function (container, state) {
     })
     myLayout.registerComponent('streamComponent', function (container, state) {
+      container.getElement().html('<iframe width="300" height="300" src="https://www.youtube.com/embed/jrOgcQ1FeFQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
     })
     myLayout.registerComponent('mapComponent', function (container, state) {
       container.getElement()[0].id = 'mapbox'
@@ -148,6 +150,10 @@ export default {
     height: 100%;
   }
   #mapbox {
+    width: 100%;
+    height: 100%;
+  }
+  video {
     width: 100%;
     height: 100%;
   }
