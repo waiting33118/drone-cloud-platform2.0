@@ -5,12 +5,21 @@
 <script>
 import GoldenLayout from 'golden-layout'
 import mapboxgl from 'mapbox-gl'
+import io from 'socket.io-client'
 import './../../node_modules/mapbox-gl/dist/mapbox-gl.css'
 import './../../node_modules/golden-layout/src/css/goldenlayout-base.css'
 import './../../node_modules/golden-layout/src/css/goldenlayout-light-theme.css'
 
 export default {
   name: 'Layout',
+  methods: {
+    socketClientInit () {
+      const socket = io('https://140.124.71.226:3030/layout')
+      socket.on('connect', () => {
+        socket.emit('userId', socket.id)
+      })
+    }
+  },
   mounted () {
     const config = {
       content: [
@@ -53,7 +62,7 @@ export default {
     })
     /* video stream */
     myLayout.registerComponent('streamComponent', function (container, state) {
-      container.getElement().html('<iframe width="460" height="316" src="https://www.youtube.com/embed/jrOgcQ1FeFQ?autoplay=1&mute=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>')
+      container.getElement().html('<video width=100% height=100% controls autoplay><source src="https://i.imgur.com/zQJGZvg.mp4" type="video/mp4"></source></video>')
     })
     /* mapbox */
     myLayout.registerComponent('mapComponent', function (container, state) {
@@ -156,6 +165,9 @@ export default {
     })
     myLayout.init()
     window.addEventListener('resize', () => myLayout.updateSize())
+  },
+  created () {
+    this.socketClientInit()
   }
 }
 </script>
@@ -168,5 +180,8 @@ export default {
   #mapbox {
     width: 100%;
     height: 100%;
+  }
+  video {
+    outline: none;
   }
 </style>
