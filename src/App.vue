@@ -10,6 +10,9 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
         <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+          <li class="nav-item d-flex justify-content-center mb-2 mb-md-0">
+            <router-link v-if="$route.path === '/client'" to="/authorize" class="btn btn-success rounded-pill mr-md-1">Authorize</router-link>
+          </li>
           <li class="nav-item d-flex justify-content-center">
               <router-link v-if="$route.path === '/client'" to="/" class="btn btn-primary rounded-pill">Home</router-link>
               <router-link v-else to="/client" class="btn btn-success rounded-pill" target="_blank">Client</router-link>
