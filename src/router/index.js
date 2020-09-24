@@ -14,6 +14,10 @@ const routes = [
     path: '/client',
     name: 'Client',
     component: () => import('./../views/Client.vue')
+  },
+  {
+    path: '/authorize',
+    beforeEnter () { location.href = 'https://140.124.71.226:3030' }
   }
 ]
 
