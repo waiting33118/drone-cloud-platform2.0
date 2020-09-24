@@ -1,7 +1,7 @@
 <template>
   <div id="wapper">
     <div class="container p-3 d-flex justify-content-around">
-        <button class="btn btn-warning rounded-pill send">Send</button>
+        <button class="btn btn-warning rounded-pill send">Send Coords</button>
         <select id="videoSelected" class="form-control w-50" @change.prevent.stop="videoSourceChange">
           <option disabled>鏡頭選擇</option>
           <option v-for="videoSource in videoSources" :key="videoSource.deviceId" :value="videoSource.deviceId">{{videoSource.label}}</option>
@@ -81,13 +81,11 @@ export default {
     socketClientInit () {
       const sendBtn = document.querySelector('.send')
       const socket = io('https://140.124.71.226:3030/client')
-      socket.on('connect', () => {
-        socket.emit('userId', socket.id)
-      })
-      socket.on('coords', (coords) => console.log(coords))
+      socket.on('connect', () => socket.emit('userId', socket.id)
+      )
+      socket.on('newDrone', (data) => console.log(`|New Connection| Client ID: ${data.id}\nTotal connections: ${data.arr.length}`))
+      socket.on('droneDisconnect', (data) => console.log(`|Disconnected| Connections: ${data.arr.length}`))
       sendBtn.addEventListener('click', () => {
-        console.log('send')
-        socket.emit('coords', '121.1231,21.65')
       })
     }
   },
