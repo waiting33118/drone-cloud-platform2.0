@@ -13,11 +13,17 @@ import './../../node_modules/golden-layout/src/css/goldenlayout-light-theme.css'
 export default {
   name: 'Layout',
   methods: {
-    socketClientInit () {
-      const socket = io('https://140.124.71.226:3030/layout')
-      socket.on('connect', () => {
-        socket.emit('userId', socket.id)
+    socketClientInit (logsDom, collectionsDom) {
+      const socket = io('https://140.124.71.226:3030/')
+      socket.on('newDrone', (data) => {
+        collectionsDom.innerHTML = `Connections:${data.arr.length}`
+        const newLogs = document.createElement('li')
+        collectionsDom.innerHTML = `Connections:${data.arr.length}`
+        newLogs.innerHTML = `|New| Client ID: ${data.id}`
+        logsDom.prepend(newLogs)
+        console.log(`|New| Client ID: ${data.id}\nTotal connections: ${data.arr.length}`)
       })
+      socket.on('droneDisconnect', (data) => console.log(`|Disconnected| Connections: ${data.arr.length}`))
     }
   },
   mounted () {
@@ -28,7 +34,7 @@ export default {
           content: [
             {
               type: 'column',
-              width: 30,
+              width: 37,
               content: [
                 {
                   type: 'component',
@@ -59,10 +65,13 @@ export default {
     const myLayout = new GoldenLayout(config, document.getElementById('golden-layout'))
     /* drone info */
     myLayout.registerComponent('droneComponent', function (container, state) {
+      container.getElement()[0].classList.add('status')
+      container.getElement()[0].setAttribute('style', 'display:flex; flex-flow:column nowrap;')
+      container.getElement().html('<div class="connections" value=0 style="height:25px; text-align: center;">Connections: 0</div><ul class="logs" style="flex-grow: 1; background-color: #000000; color: white; overflow-y: auto; margin: 0;"><li>Welcome to drone cloud platform</li></ul>')
     })
     /* video stream */
     myLayout.registerComponent('streamComponent', function (container, state) {
-      container.getElement().html('<video width=100% height=100% controls autoplay><source src="https://i.imgur.com/zQJGZvg.mp4" type="video/mp4"></source></video>')
+      container.getElement().html('<video width=100% height=100% controls autoplay style="outline: none; object-fit:cover;"><source src="https://i.imgur.com/zQJGZvg.mp4" type="video/mp4"></source></video>')
     })
     /* mapbox */
     myLayout.registerComponent('mapComponent', function (container, state) {
@@ -165,9 +174,10 @@ export default {
     })
     myLayout.init()
     window.addEventListener('resize', () => myLayout.updateSize())
-  },
-  created () {
-    this.socketClientInit()
+
+    const logsDom = document.querySelector('.logs')
+    const collectionsDom = document.querySelector('.connections')
+    this.socketClientInit(logsDom, collectionsDom)
   }
 }
 </script>
@@ -180,8 +190,5 @@ export default {
   #mapbox {
     width: 100%;
     height: 100%;
-  }
-  video {
-    outline: none;
   }
 </style>
