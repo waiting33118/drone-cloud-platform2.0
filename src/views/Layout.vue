@@ -12,72 +12,69 @@ import './../../node_modules/golden-layout/src/css/goldenlayout-light-theme.css'
 
 export default {
   name: 'Layout',
-  methods: {
-    socketClientInit (logsDom, collectionsDom) {
-      const socket = io('https://140.124.71.226:3030/')
-      socket.on('newDrone', (data) => {
-        collectionsDom.innerHTML = `Connections:${data.arr.length}`
-        const newLogs = document.createElement('li')
-        collectionsDom.innerHTML = `Connections:${data.arr.length}`
-        newLogs.innerHTML = `|New| Client ID: ${data.id}`
-        logsDom.prepend(newLogs)
-        console.log(`|New| Client ID: ${data.id}\nTotal connections: ${data.arr.length}`)
-      })
-      socket.on('droneDisconnect', (data) => console.log(`|Disconnected| Connections: ${data.arr.length}`))
+  data () {
+    return {
+      config: {
+        content: [
+          {
+            type: 'row',
+            content: [
+              {
+                type: 'column',
+                width: 37,
+                content: [
+                  {
+                    type: 'component',
+                    componentName: 'droneComponent',
+                    title: 'Drone Status'
+                  },
+                  {
+                    type: 'component',
+                    componentName: 'streamComponent',
+                    title: 'Stream Monitor'
+                  }
+                ]
+              }, {
+                type: 'column',
+                content: [
+                  {
+                    type: 'component',
+                    componentName: 'mapComponent',
+                    title: 'Mapbox'
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      token: 'pk.eyJ1Ijoid2FpdGluZzMzMTE4IiwiYSI6ImNrZDVlZWp6MjFxcXQyeHF2bW0xenU4YXoifQ.iGfojLdouAjsovJuRxjYVA'
     }
   },
   mounted () {
-    const config = {
-      content: [
-        {
-          type: 'row',
-          content: [
-            {
-              type: 'column',
-              width: 37,
-              content: [
-                {
-                  type: 'component',
-                  componentName: 'droneComponent',
-                  title: 'Drone Status'
-                },
-                {
-                  type: 'component',
-                  componentName: 'streamComponent',
-                  title: 'Stream Monitor'
-                }
-              ]
-            }, {
-              type: 'column',
-              content: [
-                {
-                  type: 'component',
-                  componentName: 'mapComponent',
-                  title: 'Mapbox'
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    }
-    /* golden layout */
-    const myLayout = new GoldenLayout(config, document.getElementById('golden-layout'))
-    /* drone info */
-    myLayout.registerComponent('droneComponent', function (container, state) {
+    /*
+    connections
+    */
+
+    const myLayout = new GoldenLayout(this.config, document.querySelector('#golden-layout'))
+
+    // drone status
+    myLayout.registerComponent('droneComponent', (container, state) => {
       container.getElement()[0].classList.add('status')
       container.getElement()[0].setAttribute('style', 'display:flex; flex-flow:column nowrap;')
-      container.getElement().html('<div class="connections" value=0 style="height:25px; text-align: center;">Connections: 0</div><ul class="logs" style="flex-grow: 1; background-color: #000000; color: white; overflow-y: auto; margin: 0;"><li>Welcome to drone cloud platform</li></ul>')
+      container.getElement().html('<div style="height:25px; text-align: center;">Connections:<span class="connections mx-2">0</span></div><ul class="logs" style="flex-grow: 1; background-color: #000000; color: white; overflow-y: auto; margin: 0; padding-top: 10px;"><li>Welcome to drone cloud platform</li></ul>')
     })
-    /* video stream */
-    myLayout.registerComponent('streamComponent', function (container, state) {
+
+    // video stream
+    myLayout.registerComponent('streamComponent', (container, state) => {
       container.getElement().html('<video width=100% height=100% controls autoplay style="outline: none; object-fit:cover;"><source src="https://i.imgur.com/zQJGZvg.mp4" type="video/mp4"></source></video>')
     })
-    /* mapbox */
-    myLayout.registerComponent('mapComponent', function (container, state) {
+
+    // mapbox
+    myLayout.registerComponent('mapComponent', (container, state) => {
       container.getElement()[0].id = 'mapbox'
       container.on('open', () => {
-        mapboxgl.accessToken = 'pk.eyJ1Ijoid2FpdGluZzMzMTE4IiwiYSI6ImNrZDVlZWp6MjFxcXQyeHF2bW0xenU4YXoifQ.iGfojLdouAjsovJuRxjYVA'
+        mapboxgl.accessToken = this.token
         const map = new mapboxgl.Map({
           style: 'mapbox://styles/waiting33118/ckdfkx3t10k9w1irkp8anuy39',
           center: { lon: 121.534907, lat: 25.043163 },
@@ -88,25 +85,9 @@ export default {
           container: 'mapbox'
         })
 
-        container.on('resize', () => {
-          map.resize()
-        })
+        container.on('resize', () => map.resize())
 
-        const nav = new mapboxgl.NavigationControl()
-        const geolocate = new mapboxgl.GeolocateControl({
-          positionOptions: {
-            enableHighAccuracy: true
-          },
-          trackUserLocation: true
-        })
-        const scale = new mapboxgl.ScaleControl({
-          maxWidth: 100,
-          unit: 'imperial'
-        })
-
-        // The 'building' layer in the mapbox-streets vector source contains building-height data from OpenStreetMap.
         map.on('load', () => {
-          // Insert the layer beneath any symbol layer.
           const layers = map.getStyle().layers
           let labelLayerId
           for (let i = 0; i < layers.length; i++) {
@@ -125,7 +106,6 @@ export default {
               minzoom: 17,
               paint: {
                 'fill-extrusion-color': '#aaa',
-                // use an 'interpolate' expression to add a smooth transition effect to the buildings as the user zooms in
                 'fill-extrusion-height': [
                   'interpolate',
                   ['linear'],
@@ -151,33 +131,52 @@ export default {
           )
         })
 
+        map.addControl(new mapboxgl.NavigationControl({
+          visualizePitch: true
+        }), 'top-right')
+        map.addControl(new mapboxgl.FullscreenControl(), 'top-left')
+        map.addControl(new mapboxgl.ScaleControl({
+          maxWidth: 200,
+          unit: 'metric'
+        }), 'bottom-right')
+
         new mapboxgl.Marker({
           draggable: true,
           color: '#92E000'
         })
           .setLngLat([121.53592286623717, 25.04267087499275])
           .addTo(map)
-
         new mapboxgl.Marker({
           draggable: true,
           color: '#FF3B22'
         })
           .setLngLat([121.5345043337581, 25.04280286711254])
           .addTo(map)
-
-        map.addControl(nav, 'top-right')
-        map.addControl(geolocate, 'top-right')
-        map.addControl(new mapboxgl.FullscreenControl(), 'top-left')
-        map.addControl(scale)
-        scale.setUnit('metric')
       })
     })
     myLayout.init()
     window.addEventListener('resize', () => myLayout.updateSize())
 
-    const logsDom = document.querySelector('.logs')
-    const collectionsDom = document.querySelector('.connections')
-    this.socketClientInit(logsDom, collectionsDom)
+    const socket = io('https://140.124.71.226:3030/')
+    socket.on('newDrone', (data) => {
+      console.log(data)
+      const logs = document.querySelector('.logs')
+      const connections = document.querySelector('.connections')
+      connections.innerHTML = data.droneCounts
+      const logElement = document.createElement('li')
+      logElement.innerHTML = `|New| Client ID: ${data.clientId}`
+      logs.prepend(logElement)
+    })
+    socket.on('droneDisconnect', (data) => {
+      console.log(data)
+      const logs = document.querySelector('.logs')
+      const connections = document.querySelector('.connections')
+      connections.innerHTML = data.droneCounts
+      const logElement = document.createElement('li')
+      logElement.innerHTML = '|Drone disconnected|'
+      logs.prepend(logElement)
+    })
+    socket.on('sendCoords', (data) => console.log(data))
   }
 }
 </script>
