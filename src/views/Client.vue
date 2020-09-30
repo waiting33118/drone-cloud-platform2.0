@@ -1,6 +1,6 @@
 <template>
   <div id="wapper">
-    <div class="container p-3 d-flex justify-content-around">
+    <div class="container p-3 d-flex justify-content-around align-items-center">
         <button class="btn btn-warning rounded-pill send">Send Coords</button>
         <select id="videoSelected" class="form-control w-50" @change.prevent.stop="videoSourceChange">
           <option disabled>鏡頭選擇</option>
@@ -79,14 +79,21 @@ export default {
       }
     },
     socketClientInit () {
-      const sendBtn = document.querySelector('.send')
+      const sendButton = document.querySelector('.send')
       const socket = io('https://140.124.71.226:3030/client')
       socket.on('connect', () => socket.emit('userId', socket.id)
       )
-      socket.on('newDrone', (data) => console.log(`|New Connection| Client ID: ${data.id}\nTotal connections: ${data.arr.length}`))
-      socket.on('droneDisconnect', (data) => console.log(`|Disconnected| Connections: ${data.arr.length}`))
-      sendBtn.addEventListener('click', () => {
-      })
+      sendButton.addEventListener('click', sendCoords)
+
+      function sendCoords () {
+        navigator.geolocation.watchPosition((position) => {
+          const { longitude, latitude } = position.coords
+          console.log(longitude, latitude)
+          socket.emit('sendCoords', { longitude, latitude })
+        }
+        , (error) => new Error(error.message)
+        , { enableHighAccuracy: true })
+      }
     }
   },
   mounted () {
