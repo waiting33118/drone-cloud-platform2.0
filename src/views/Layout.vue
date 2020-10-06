@@ -48,14 +48,11 @@ export default {
           }
         ]
       },
-      token: 'pk.eyJ1Ijoid2FpdGluZzMzMTE4IiwiYSI6ImNrZDVlZWp6MjFxcXQyeHF2bW0xenU4YXoifQ.iGfojLdouAjsovJuRxjYVA'
+      token: 'pk.eyJ1Ijoid2FpdGluZzMzMTE4IiwiYSI6ImNrZDVlZWp6MjFxcXQyeHF2bW0xenU4YXoifQ.iGfojLdouAjsovJuRxjYVA',
+      coords: []
     }
   },
   mounted () {
-    /*
-    connections
-    */
-
     const myLayout = new GoldenLayout(this.config, document.querySelector('#golden-layout'))
 
     // drone status
@@ -129,6 +126,30 @@ export default {
             },
             labelLayerId
           )
+          map.addSource('trace', {
+            type: 'geojson',
+            data: {
+              type: 'Feature',
+              geometry: {
+                type: 'LineString',
+                coordinates: this.coords
+              }
+            }
+          })
+          map.addLayer({
+            id: 'trace',
+            type: 'line',
+            source: 'trace',
+            layout: {
+              'line-join': 'round',
+              'line-cap': 'round'
+            },
+            paint: {
+              'line-color': 'yellow',
+              'line-opacity': 0.75,
+              'line-width': 10
+            }
+          })
         })
 
         map.addControl(new mapboxgl.NavigationControl({
@@ -152,31 +173,56 @@ export default {
         })
           .setLngLat([121.5345043337581, 25.04280286711254])
           .addTo(map)
+
+        const socket = io('https://140.124.71.226:3030/')
+        socket.on('newDrone', (data) => {
+          console.log(data)
+          const logs = document.querySelector('.logs')
+          const connections = document.querySelector('.connections')
+          connections.innerHTML = data.droneCounts
+          const logElement = document.createElement('li')
+          logElement.innerHTML = `|New| Client ID: ${data.clientId}`
+          logs.prepend(logElement)
+        })
+        socket.on('droneDisconnect', (data) => {
+          console.log(data)
+          const logs = document.querySelector('.logs')
+          const connections = document.querySelector('.connections')
+          connections.innerHTML = data.droneCounts
+          const logElement = document.createElement('li')
+          logElement.innerHTML = '|Drone disconnected|'
+          logs.prepend(logElement)
+        })
+        socket.on('sendCoords', (data) => {
+          console.log(data)
+          this.coords.push(data)
+          console.log(this.coords)
+          map.getSource('trace').setData({
+            type: 'FeatureCollection',
+            features: [{
+              type: 'Feature',
+              geometry: {
+                type: 'LineString',
+                coordinates: this.coords
+              }
+            }]
+          })
+          map.panTo(this.coords[this.coords.length - 1])
+          const logs = document.querySelector('.logs')
+          const logElement = document.createElement('li')
+          logElement.innerHTML = `GPS:${data[0]},${data[1]}`
+          logs.prepend(logElement)
+        })
+        socket.on('stopSending', (data) => {
+          const logs = document.querySelector('.logs')
+          const logElement = document.createElement('li')
+          logElement.innerHTML = '===Gps tracking stopped!==='
+          logs.prepend(logElement)
+        })
       })
     })
     myLayout.init()
     window.addEventListener('resize', () => myLayout.updateSize())
-
-    const socket = io('https://140.124.71.226:3030/')
-    socket.on('newDrone', (data) => {
-      console.log(data)
-      const logs = document.querySelector('.logs')
-      const connections = document.querySelector('.connections')
-      connections.innerHTML = data.droneCounts
-      const logElement = document.createElement('li')
-      logElement.innerHTML = `|New| Client ID: ${data.clientId}`
-      logs.prepend(logElement)
-    })
-    socket.on('droneDisconnect', (data) => {
-      console.log(data)
-      const logs = document.querySelector('.logs')
-      const connections = document.querySelector('.connections')
-      connections.innerHTML = data.droneCounts
-      const logElement = document.createElement('li')
-      logElement.innerHTML = '|Drone disconnected|'
-      logs.prepend(logElement)
-    })
-    socket.on('sendCoords', (data) => console.log(data))
   }
 }
 </script>
