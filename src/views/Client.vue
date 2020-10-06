@@ -1,8 +1,9 @@
 <template>
   <div id="wapper">
     <div class="container p-3 d-flex justify-content-around align-items-center">
-        <button class="btn btn-warning rounded-pill send">Send Coords</button>
-        <select id="videoSelected" class="form-control w-50" @change.prevent.stop="videoSourceChange">
+        <button class="btn btn-success rounded send" :disabled="isStart">start</button>
+        <button class="btn btn-danger rounded stop" :disabled="isStopped">stop</button>
+        <select id="videoSelected" class="form-control w-50" @change="videoSourceChange">
           <option disabled>鏡頭選擇</option>
           <option v-for="videoSource in videoSources" :key="videoSource.deviceId" :value="videoSource.deviceId">{{videoSource.label}}</option>
         </select>
@@ -11,6 +12,7 @@
           <option v-for="audioSource in audioSources" :key="audioSource.deviceId" :value="audioSource.deviceId">{{audioSource.label}}</option>
         </select>
     </div>
+    <div class="client">{{clientName}}</div>
     <video autoplay controls></video>
   </div>
 </template>
@@ -21,6 +23,7 @@ export default {
   name: 'Client',
   data () {
     return {
+      clientName: '',
       constraints: {
         video: {
           deviceId: '',
@@ -33,7 +36,10 @@ export default {
         }
       },
       videoSources: [],
-      audioSources: []
+      audioSources: [],
+      isStart: false,
+      isStopped: true,
+      watchId: 0
     }
   },
   methods: {
@@ -80,20 +86,35 @@ export default {
     },
     socketClientInit () {
       const sendButton = document.querySelector('.send')
+      const stopButton = document.querySelector('.stop')
       const socket = io('https://140.124.71.226:3030/client')
-      socket.on('connect', () => socket.emit('userId', socket.id)
-      )
-      sendButton.addEventListener('click', sendCoords)
+      socket.on('connect', () => {
+        this.clientName = socket.id
+        socket.emit('userId', socket.id)
+      })
 
-      function sendCoords () {
-        navigator.geolocation.watchPosition((position) => {
+      const sendCoords = () => {
+        this.watchId = navigator.geolocation.watchPosition(position => {
+          this.isStart = true
+          this.isStopped = false
+          console.log(this.watchId)
           const { longitude, latitude } = position.coords
-          console.log(longitude, latitude)
+          console.log({ longitude, latitude })
           socket.emit('sendCoords', { longitude, latitude })
         }
         , (error) => new Error(error.message)
         , { enableHighAccuracy: true })
       }
+
+      const stopWatching = () => {
+        this.isStart = false
+        this.isStopped = true
+        navigator.geolocation.clearWatch(this.watchId)
+        socket.emit('stopSending')
+      }
+
+      sendButton.addEventListener('click', sendCoords)
+      stopButton.addEventListener('click', stopWatching)
     }
   },
   mounted () {
