@@ -161,18 +161,27 @@ export default {
           unit: 'metric'
         }), 'bottom-right')
 
-        new mapboxgl.Marker({
-          draggable: true,
-          color: '#92E000'
+        const droneIcon = document.createElement('div')
+        droneIcon.className = 'drone-icon'
+        droneIcon.style.backgroundImage = 'url(https://www.flaticon.com/svg/static/icons/svg/3569/3569919.svg)'
+        droneIcon.style.height = '50px'
+        droneIcon.style.width = '50px'
+        droneIcon.style.backgroundSize = 'cover'
+        const drone = new mapboxgl.Marker({
+          element: droneIcon,
+          draggable: true
         })
-          .setLngLat([121.53592286623717, 25.04267087499275])
+          .setLngLat([121.53468225613972, 25.042934498680154])
           .addTo(map)
-        new mapboxgl.Marker({
-          draggable: true,
-          color: '#FF3B22'
+
+        drone.on('dragend', () => {
+          const coords = drone.getLngLat()
+          console.log(coords.lng, coords.lat)
+          const logs = document.querySelector('.logs')
+          const logElement = document.createElement('li')
+          logElement.innerHTML = `Set drone position to GPS:${coords.lng} ${coords.lat}`
+          logs.prepend(logElement)
         })
-          .setLngLat([121.5345043337581, 25.04280286711254])
-          .addTo(map)
 
         const socket = io('https://140.124.71.226:3030/')
         socket.on('newDrone', (data) => {
@@ -194,9 +203,7 @@ export default {
           logs.prepend(logElement)
         })
         socket.on('sendCoords', (data) => {
-          console.log(data)
           this.coords.push(data)
-          console.log(this.coords)
           map.getSource('trace').setData({
             type: 'FeatureCollection',
             features: [{
