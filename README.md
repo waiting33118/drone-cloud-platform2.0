@@ -1,5 +1,7 @@
 # drone-cloud-platform2.0
 
+# This repo is deprecated , Please visit [Drone Cloud Plateform3.0](https://github.com/waiting33118/drone-cloud-platform3.0)
+
 ## Project setup
 ```
 npm install
