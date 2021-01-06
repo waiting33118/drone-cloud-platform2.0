@@ -14,7 +14,7 @@
     "jquery": "^3.5.1",
     "mapbox-gl": "^1.12.0",
     "popper.js": "^1.16.1",
-    "socket.io-client": "^2.3.1",
+    "socket.io-client": "^3.0.5",
     "vue": "^2.6.12",
     "vue-router": "^3.4.8",
     "vuex": "^3.5.1"
